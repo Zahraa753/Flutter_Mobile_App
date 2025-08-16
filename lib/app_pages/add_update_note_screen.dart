@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:notes_app/app_pages/Hive_files_notes/note_model.dart';
+import 'package:notes_app/state_management/add_folder_provider.dart';
 import 'package:notes_app/state_management/add_note_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -30,6 +31,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
       child: Builder(
         builder: (context) {
           final prov = Provider.of<AddNoteProvider>(context);
+
           return Scaffold(
             backgroundColor: prov.selectedColor != null
                 ? lighten(prov.colors[prov.selectedColor!], 0.2)
@@ -127,6 +129,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                                         onTap: () {
                                           setState(() {
                                             prov.selectedColor = index;
+                                            prov.getAllFolders();
                                           });
                                         },
                                         child: Container(
@@ -156,83 +159,50 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                                 );
                               },
                             ),
-
-                            //***************consumer for selected folder******** */
-                            Consumer<AddNoteProvider>(
-                              builder: (context, _, _) {
-                                return ListView.separated(
-                                  shrinkWrap: true,
-                                  physics: NeverScrollableScrollPhysics(),
-
-                                  itemCount: prov.folder.length,
-                                  itemBuilder: (context, index) {
-                                    return ListTile(
-                                      title: Container(
-                                        padding: EdgeInsets.all(12),
-                                        decoration: BoxDecoration(
-                                          color: Color(
-                                            prov.folder[index].color,
-                                          ),
-                                          borderRadius: BorderRadius.circular(
-                                            20,
-                                          ),
-                                        ),
-                                        child: Row(
-                                          children: [
-                                            Expanded(
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Row(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      Expanded(
-                                                        child: Text(
-                                                          prov
-                                                              .folder[index]
-                                                              .label,
-                                                          style: TextStyle(
-                                                            color: Colors.white,
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                            fontSize: 20,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      Text(
-                                                        prov
-                                                            .folder[index]
-                                                            .createAt
-                                                            .toString()
-                                                            .split(' ')[0],
-                                                        style: TextStyle(
-                                                          color: Colors.white,
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  // Remove the empty Row widget here
-                                                ],
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                  separatorBuilder: (context, index) {
-                                    return Divider(color: Colors.grey);
-                                  },
-                                );
-                              },
-                            ),
                           ],
                         ),
                       ),
                     ),
+                  ),
+                  Consumer<AddNoteProvider>(
+                    builder: (context, _, _) {
+                      return ListView.separated(
+                        physics: NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        padding: EdgeInsets.all(16),
+                        itemBuilder: (context, index) => GestureDetector(
+                          onTap: () async {
+                            prov.changeFolder(prov.folder[index]);
+                          },
+                          child: Container(
+                            padding: EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: Color(prov.folder[index].color),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    prov.folder[index].label,
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20,
+                                    ),
+                                  ),
+                                ),
+                                if (prov.selectedFolder == prov.folder[index])
+                                  Icon(Icons.check, color: Colors.white),
+                              ],
+                            ),
+                          ),
+                        ),
+                        separatorBuilder: (context, index) =>
+                            SizedBox(height: 10),
+                        itemCount: prov.folder.length,
+                      );
+                    },
                   ),
 
                   Container(

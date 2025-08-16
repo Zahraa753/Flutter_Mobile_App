@@ -185,7 +185,7 @@ class _AddFolderState extends State<AddFolder> {
                         onPressed: () {
                           if (prov.formKey.currentState!.validate()) {
                             if (prov.selected_color != null) {
-                              AddFolder();
+                              prov.AddFolder();
                               prov.getAllFolders();
                             } else {
                               Fluttertoast.showToast(

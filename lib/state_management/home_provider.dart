@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:notes_app/app_pages/Hive_files_folder/folder_model.dart';
 import 'package:notes_app/app_pages/Hive_files_notes/note_model.dart';
 
 class HomeProvider extends ChangeNotifier {
@@ -10,6 +11,19 @@ class HomeProvider extends ChangeNotifier {
   void getAllNotes() async {
     var box = await Hive.openBox<NoteModel>('notesBox');
     notes = box.values.toList();
+    notifyListeners();
+  }
+
+  void addFolder(FolderModel folderModel) async {
+    var box = await Hive.openBox<FolderModel>('folderBox');
+    await box.add(folderModel);
+    getAllNotes(); // Refresh the notes after adding a folder
+  }
+
+  List<FolderModel> folder = [];
+  void getAllFolders() async {
+    var box = await Hive.openBox<FolderModel>('folderBox');
+    folder = box.values.toList();
     notifyListeners();
   }
 
@@ -25,19 +39,5 @@ class HomeProvider extends ChangeNotifier {
     noteModel.isCompleted = !noteModel.isCompleted;
     await box.putAt(index, noteModel);
     getAllNotes();
-  }
-
-  List<String> folders = [];
-
-  // Example method to add a folder
-  void addFolder(String folderName) {
-    folders.add(folderName);
-    notifyListeners();
-  }
-
-  // Example method to remove a folder
-  void removeFolder(String folderName) {
-    folders.remove(folderName);
-    notifyListeners();
   }
 }

@@ -69,6 +69,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     );
                     if (result != null && result) {
                       prov.getAllNotes();
+                      prov.getAllFolders();
                     }
                   },
                   child: Container(
@@ -133,10 +134,20 @@ class _HomeScreenState extends State<HomeScreen> {
                                 Row(
                                   spacing: 5,
                                   children: [
-                                    Icon(
-                                      Icons.folder,
-                                      color: Color(
-                                        prov.notes[index].folder!.color,
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.rectangle,
+                                        color: Colors.white,
+                                        border: Border.all(
+                                          color: Colors.white,
+                                          width: 1,
+                                        ),
+                                      ),
+                                      child: Icon(
+                                        Icons.folder_copy_rounded,
+                                        color: Color(
+                                          prov.notes[index].folder!.color,
+                                        ),
                                       ),
                                     ),
                                     Text(

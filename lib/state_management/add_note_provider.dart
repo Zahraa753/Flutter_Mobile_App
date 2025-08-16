@@ -21,6 +21,7 @@ class AddNoteProvider extends ChangeNotifier {
   void getAllFolders() async {
     var box = await Hive.openBox<FolderModel>('folderBox');
     folder = box.values.toList();
+    notifyListeners();
   }
 
   void addNote(BuildContext context) async {
@@ -28,6 +29,7 @@ class AddNoteProvider extends ChangeNotifier {
     NoteModel noteModel = NoteModel(
       title: titleController.text,
       body: bodyController.text,
+      folder: selectedFolder,
       createdAt: DateTime.now(),
       color: colors[selectedColor!].value,
     );
@@ -44,6 +46,7 @@ class AddNoteProvider extends ChangeNotifier {
         NoteModel noteModel = NoteModel(
           title: titleController.text,
           body: bodyController.text,
+          folder: selectedFolder,
           createdAt: note!.createdAt, //needs more
           color: colors[selectedColor!].value,
         );
